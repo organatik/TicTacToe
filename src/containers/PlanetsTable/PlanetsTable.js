@@ -8,7 +8,8 @@ class PlanetsTable extends Component {
     state = {
         planets : [],
         keys: [],
-        selectedOptions: ' '
+        selectedOptions: ' ',
+        sortBy: true
     };
     handleChange = (selectedOption) => {
         this.setState({selectedOption});
@@ -17,10 +18,18 @@ class PlanetsTable extends Component {
     };
     sortBy(key) {
         console.log(this.state.planets);
-        this.setState({
-            planets: this.state.planets.sort((a, b) => +a[key] < +b[key])
+        if(this.state.sortBy) {
+            this.setState({
+                planets: this.state.planets.sort((a, b) => +a[key] < +b[key]),
+                sortBy: !this.state.sortBy
+            });
 
-        })
+        } else {
+            this.setState({
+                planets: this.state.planets.sort((a, b) => +a[key] > +b[key]),
+                sortBy: !this.state.sortBy
+            })
+        }
     }
 
 

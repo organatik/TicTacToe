@@ -7,6 +7,7 @@ const tableHeaders = (props) => {
     return (
             <th onClick={props.click}>
                 {props.keys}
+                {props.sortImg}
             </th>
     );
 };

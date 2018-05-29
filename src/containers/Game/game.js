@@ -53,7 +53,7 @@ class Game extends Component {
         const winner = calculateWinner(current.squares);
 
 
-        const moves = history.map((step,move) => {
+            const moves = history.map((step,move) => {
             const desc = move ? 'Go to move #' + move : 'Go to the game start';
             if (move === this.state.stepNumber) {
                 return (

@@ -11,6 +11,11 @@ import PlanetsTable from './containers/PlanetsTable/PlanetsTable';
 
 class App extends Component {
   render() {
+    const links = ['Game', 'Planets'];
+    const routs = [
+        {path: '/game', component: Game},
+        {path: '/planets', component: PlanetsTable},
+    ];
     return (
       <Router>
           <div className="App">
@@ -18,20 +23,16 @@ class App extends Component {
                   <img src={logo} className="App-logo" alt="logo" />
                   <h1 className="App-title">Welcome to React</h1>
                   <nav>
-                      <li>
-                          <Link to='/game'>
-                              Game
-                          </Link>
-                      </li>
-                      <li>
-                          <Link to='/planets'>
-                              Planets
-                          </Link>
-                      </li>
+                      {links.map((link) =>
+                          <li key={link} >
+                              <Link to={'/'+ link.toLowerCase() }>{link}</Link>
+                          </li>
+                      )}
                   </nav>
               </header>
-              <Route path='/game' component={Game}/>
-              <Route path='/planets' component={PlanetsTable}/>
+              {routs.map((rout) =>
+                  <Route  key={rout.path} path={rout.path} component={rout.component}  />
+              )}
           </div>
       </Router>
     );

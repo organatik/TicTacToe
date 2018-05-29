@@ -1,11 +1,8 @@
 import React from "react";
 
 
-
-
 const planet = (props) => {
     return (
-
                 <tr>
                     {
                         props.keys.map(key => {
@@ -17,7 +14,6 @@ const planet = (props) => {
                         })
                     }
                 </tr>
-
     );
 };
 export default planet;

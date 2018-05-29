@@ -4,13 +4,14 @@ import './PlanetsTable.css';
 import Select from 'react-select';
 import Planet from '../../components/Planet/planet';
 import TableHeaders from '../../components/PlanetsTableHeaders/tableHeaders'
+import {terrainOptions, populationOptions} from './constants'
 
 
 class PlanetsTable extends Component {
     state = {
-        planets : [],
+        planets: [],
         keys: [],
-        selectedOptionsTerrain : null,
+        selectedOptionsTerrain: null,
         selectedOptionsPopulation: null,
         sortBy: true,
     };
@@ -19,9 +20,7 @@ class PlanetsTable extends Component {
         let keys;
         axios.get('https://swapi.co/api/planets/')
             .then(res => {
-                // console.log(res.data.results);
-                keys = Object.keys(res.data.results[0]).slice(0,9);
-                // console.log(keys);
+                keys = Object.keys(res.data.results[0]).slice(0, 9);
                 this.setState({
                     planets: res.data.results,
                     keys: keys
@@ -29,148 +28,99 @@ class PlanetsTable extends Component {
             })
 
     }
-    handleChangeTerrain = (selectedOption) => {
-        // console.log(this.state.selectedOptions);
-        if(selectedOption !== null) {
-            this.setState({
-                selectedOptionsTerrain: selectedOption.value
-            });
-        } else {
-            this.setState({
-                selectedOptionsTerrain: null
-            });
-        }
 
-
-        // console.log('Selected: ' + selectedOption.label)
-
-    };
-    handleChangePopulation = (selectedOption) => {
-
-        if(selectedOption !== null) {
-            this.setState({
-                selectedOptionsPopulation: selectedOption.value
-            });
-        } else {
-            this.setState({
-                selectedOptionsPopulation: null
-            });
-        }
-        console.log(this.state.selectedOptionsPopulation);
-
-    };
-
-    // setFilter(filter) {
-    //     this.setState((state)=> ({
-    //         filters: Object.assign({},state.filters,{[filter]: !state.filters[filter]} )
-    //     }))
-    // }
-    sortBy(key) {
-        console.log(this.state.planets);
-        if(this.state.sortBy) {
-            this.setState({
-                planets: this.state.planets.sort((a, b) => +a[key] < +b[key]),
-                sortBy: !this.state.sortBy
-            });
-
-        } else {
-            this.setState({
-                planets: this.state.planets.sort((a, b) => +a[key] > +b[key]),
-                sortBy: !this.state.sortBy
-            })
-        }
-    }
-
-
-
-
-
-    render() {
-
-        const { selectedOption } = this.state;
+    renderAllPlanets = () => {
         let planets = this.state.planets.slice();
-        if(this.state.selectedOptionsTerrain) {
-            planets = planets.filter( planet => planet.terrain.split(', ').includes(this.state.selectedOptionsTerrain));
+        if (this.state.selectedOptionsTerrain) {
+            planets = planets.filter(planet => planet.terrain.split(', ').includes(this.state.selectedOptionsTerrain));
         }
-        if(this.state.selectedOptionsPopulation) {
-            planets = planets.filter( planet => planet.population > this.state.selectedOptionsPopulation)
+        if (this.state.selectedOptionsPopulation) {
+            planets = planets.filter(planet => planet.population > this.state.selectedOptionsPopulation)
         }
-
-      const allPlanets = (
-          planets.map((planet ) => {
-                return <Planet
+        return (planets.map(planet =>
+                 <Planet
                     planet={planet}
                     key={planet.url}
-                    keys={this.state.keys}/>
-          }
+                    keys={this.state.keys}
+                />
+            )
+        )
+    };
+
+    renderTableHeaders = () => (
+        this.state.keys.map(key =>
+             <TableHeaders
+                key={key}
+                keys={key}
+                click={() => {
+                    this.sortBy(key)
+                }}
+            />
         )
     );
 
-        const tableHeaders = (
-                this.state.keys.map(key => {
+    handleChangeTerrain = (selectedOption) =>
+        this.setState(() => ({
+            selectedOptionsTerrain: selectedOption
+                ? selectedOption.value
+                : null
+        }));
 
-                        return <TableHeaders
-                            key={key}
-                            keys={key}
-                            click={ ()=>{this.sortBy(key)} }
-                        />
+    handleChangePopulation = (selectedOption) =>
+        this.setState(() => ({
+            selectedOptionsPopulation: selectedOption
+                ? selectedOption.value
+                : null
+        }));
 
-                })
-        );
 
-        const selectTerrain = (
-            <Select
-                placeholder='Terrain'
-                name='filterTerrain'
-                value={selectedOption}
-                onChange={this.handleChangeTerrain}
-                searchable={false}
-                isClearable
-                options={[
-                    {value: 'grassy hills', label: 'Grassy Hills'},
-                    {value: 'swamps', label: 'Swamps'},
-                    {value: 'forests', label: 'Forests'},
-                    {value: 'mountains', label: 'Mountains'},
-                ]}
-            />
-        );
-        const selectPopulation = (
-            <Select
-                placeholder='Population'
-                name='filterPopulation'
-                value={selectedOption}
-                onChange={this.handleChangePopulation}
-                searchable={false}
-                isClearable
-                options={[
-                    {value: 100000, label: ' > 100000'},
-                    {value: 1000000, label: '> 1000000 '},
-                    {value: 5000000, label: ' > 5000000'},
-                    {value: 100000000, label: ' > 100000000'},
+    sortBy(key) {
+        this.setState(() => ({
+            sortBy: !this.state.sortBy,
+            planets: this.state.sortBy
+                ? this.state.planets.sort((a, b) => +a[key] < +b[key])
+                : this.state.planets.sort((a, b) => +a[key] > +b[key])
+        }));
+    }
 
-                ]}
-            />
-        );
+    render() {
 
+        const {selectedOption} = this.state;
 
         return (
             <div className={'wrapper container-fluid'}>
                 <div className="row">
                     <div className={'col-md-2'}>
-                        {selectTerrain}
+                        <Select
+                            placeholder='Terrain'
+                            name='filterTerrain'
+                            value={selectedOption}
+                            onChange={this.handleChangeTerrain}
+                            searchable={false}
+                            isClearable
+                            options={terrainOptions}
+                        />
                     </div>
                     <div className="col-md-2">
-                        {selectPopulation}
+                        <Select
+                            placeholder='Population'
+                            name='filterPopulation'
+                            value={selectedOption}
+                            onChange={this.handleChangePopulation}
+                            searchable={false}
+                            isClearable
+                            options={populationOptions}
+                        />
                     </div>
                 </div>
                 <table className={'table  table-striped table-bordered'}>
                     <thead>
                         <tr>
-                            {tableHeaders}
+                            {this.renderTableHeaders()}
                         </tr>
                     </thead>
                     <tbody>
-                        {allPlanets}
+                        {this.renderAllPlanets()}
                     </tbody>
                 </table>
             </div>
@@ -180,6 +130,4 @@ class PlanetsTable extends Component {
 }
 
 
-
-
-export default  PlanetsTable;
+export default PlanetsTable;

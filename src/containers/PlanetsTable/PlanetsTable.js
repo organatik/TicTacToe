@@ -28,16 +28,20 @@ class PlanetsTable extends Component {
             })
 
     }
+    filters = () => {
+        let planets = this.state.planets.slice();
+        const {selectedOptionsTerrain,  selectedOptionsPopulation} = this.state;
+        if (selectedOptionsTerrain) {
+            planets = planets.filter(p => p.terrain.split(', ').includes(selectedOptionsTerrain));
+        }
+        if (selectedOptionsPopulation) {
+            planets = planets.filter(p => p.population > selectedOptionsPopulation)
+        }
+        return planets
+    };
 
     renderAllPlanets = () => {
-        let planets = this.state.planets.slice();
-        if (this.state.selectedOptionsTerrain) {
-            planets = planets.filter(planet => planet.terrain.split(', ').includes(this.state.selectedOptionsTerrain));
-        }
-        if (this.state.selectedOptionsPopulation) {
-            planets = planets.filter(planet => planet.population > this.state.selectedOptionsPopulation)
-        }
-        return (planets.map(planet =>
+        return (this.filters().map(planet =>
                  <Planet
                     planet={planet}
                     key={planet.url}
